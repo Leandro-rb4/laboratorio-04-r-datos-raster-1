@@ -1,7 +1,7 @@
 ---
 title: "GF-0604 Procesamiento de datos geográficos<br>Laboratorio 04: R - Datos raster 1"
-author: "Manuel Vargas"
-date: "2020-06-11"
+author: "Leandro Rodríguez Bolaños"
+date: "2020-06-18"
 output:
   html_document:
     theme: readable    
@@ -38,6 +38,103 @@ Elabore un mapa web que contenga:
 5. (20%) Leyendas para las dos capas raster. Elija con cuidado las paletas de colores de ambas capas.
 6. (10%) Un control de mapa de referencia (_MiniMap_).
 
+
+```{r}
+
+library(sf)
+
+library(dplyr)
+
+library(leaflet)
+
+library(raster)
+
+library(rgdal)
+
+cr_ara_ambiguus <-
+  st_read(
+    "https://raw.githubusercontent.com/geoprocesamiento-2020i/datos/master/biodiversidad/registros-presencia/cr/cr-ara-ambiguus.geojson"
+  )
+
+cr_pharomachrus_mocinno <-
+    st_read(
+        "https://raw.githubusercontent.com/geoprocesamiento-2020i/datos/master/biodiversidad/registros-presencia/cr/cr_pharomachrus_mocinno.geojson"
+    )
+
+altitude <- getData("worldclim", var="alt", res=.5, lon=-84, lat=10)
+cr_altitude <- crop(altitude, extent(-86, -82.3, 8, 11.3))
+
+pal <- colorNumeric(
+  c("#FFFF00","#FF0000", "#FF0000"), 
+  values(cr_altitude), 
+  na.color = "transparent"
+)
+
+precip <- getData("worldclim", var="prec", res=.5, lon=-84, lat=10)
+cr_precip <- crop(precip, extent(-86, -82.3, 8, 11.3))
+
+pal2 <- colorNumeric(
+  c("#FFFFFF", "#87CEEB", "#0000FF"), 
+  values(cr_precip), 
+  na.color = "transparent")
+
+m <- leaflet() %>% 
+  addProviderTiles(providers$Esri.WorldImagery, group = "Imágenes de ESRI") %>% 
+  addProviderTiles(providers$Stamen.TonerLite, group = "Stamen Toner Lite") %>%
+  addProviderTiles(providers$OpenStreetMap.Mapnik, group = "OpenStreetMap") %>%
+  addCircleMarkers(data = cr_ara_ambiguus,
+                   stroke = F,
+                   radius = 4,
+                   fillColor = 'green',
+                   fillOpacity = 1,
+                   group = "Ara ambiguus",
+                   popup = paste(cr_ara_ambiguus$locality, 
+                                 cr_ara_ambiguus$year, 
+                                 sep = '<br/>')) %>% 
+    addCircleMarkers(data = cr_pharomachrus_mocinno,
+                   stroke = F,
+                   radius = 4,
+                   fillColor = 'purple',
+                   fillOpacity = 1,
+                   group = "Pharomachrus mocinno",
+                   popup = paste(cr_pharomachrus_mocinno$locality, 
+                                 cr_pharomachrus_mocinno$year, 
+                                 sep = '<br/>'))%>%
+
+  addRasterImage(cr_altitude, 
+                 colors = pal, 
+                 opacity = 0.8, 
+                 group = "Altitud"
+  ) %>%
+
+  addRasterImage(cr_precip$prec8_23, 
+                 colors = pal2, 
+                 opacity = 0.8, 
+                 group = "Precipitaciones"
+  )%>%
+  addLayersControl(
+    baseGroups = c("OpenStreetMap", "Stamen Toner Lite", "Imágenes de ESRI"),
+    overlayGroups = c("Altitud","Precipitaciones", "Ara ambiguus", "Pharomachrus mocinno"),
+    options = layersControlOptions(collapsed = FALSE)    
+  )%>% 
+  addMiniMap(
+    toggleDisplay = TRUE,
+    position = "bottomleft",
+    tiles = providers$Stamen.TonerLite
+  ) %>%
+  addLegend(pal = pal, 
+            values = values(cr_altitude), 
+            title = "Altitud", position = "bottomleft"
+  )%>% 
+  addLegend(pal = pal2, 
+            values = values(cr_precip), 
+            title = "Prom. de 
+            precipitaciones", position = "bottomright",
+)
+
+m
+
+```
 
 
 Los mapas deben ser implementados con el paquete ```Leaflet```.
