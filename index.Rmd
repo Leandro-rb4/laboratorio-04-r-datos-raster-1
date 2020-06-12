@@ -107,7 +107,7 @@ m <- leaflet() %>%
                  group = "Altitud"
   ) %>%
 
-  addRasterImage(cr_precip$prec8_23, 
+  addRasterImage(cr_precip$prec1_23, 
                  colors = pal2, 
                  opacity = 0.8, 
                  group = "Precipitaciones"
