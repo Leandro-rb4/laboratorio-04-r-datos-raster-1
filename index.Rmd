@@ -74,7 +74,7 @@ precip <- getData("worldclim", var="prec", res=.5, lon=-84, lat=10)
 cr_precip <- crop(precip, extent(-86, -82.3, 8, 11.3))
 
 pal2 <- colorNumeric(
-  c("#FFFFFF", "#87CEEB", "#0000FF"), 
+  c("#FFFFFF", "#87CEEB", "#00008B"), 
   values(cr_precip), 
   na.color = "transparent")
 
