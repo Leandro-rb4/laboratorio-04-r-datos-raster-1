@@ -39,7 +39,7 @@ Elabore un mapa web que contenga:
 6. (10%) Un control de mapa de referencia (_MiniMap_).
 
 
-```{r}
+```{r, message=FALSE, warning=FALSE}
 
 library(sf)
 
