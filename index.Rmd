@@ -65,16 +65,16 @@ altitude <- getData("worldclim", var="alt", res=.5, lon=-84, lat=10)
 cr_altitude <- crop(altitude, extent(-86, -82.3, 8, 11.3))
 
 pal <- colorNumeric(
-  c("#FFFF00","#FF0000", "#FF0000"), 
+  c("#00FF00", "#7FFF00", "#FFFF00", "#FF7F00", "#FF0000"), 
   values(cr_altitude), 
   na.color = "transparent"
 )
 
-precip <- getData("worldclim", var="prec", res=.5, lon=-84, lat=10)
+precip <- getData("worldclim", var="bio", res=.5, lon=-84, lat=10)
 cr_precip <- crop(precip, extent(-86, -82.3, 8, 11.3))
 
 pal2 <- colorNumeric(
-  c("#FFFFFF", "#87CEEB", "#00008B"), 
+  c("#FFC0CB", "#C3C7DB", "#87CEEB", "#4367BB", "#00008B"), 
   values(cr_precip), 
   na.color = "transparent")
 
@@ -94,7 +94,7 @@ m <- leaflet() %>%
     addCircleMarkers(data = cr_pharomachrus_mocinno,
                    stroke = F,
                    radius = 4,
-                   fillColor = 'purple',
+                   fillColor = 'brown',
                    fillOpacity = 1,
                    group = "Pharomachrus mocinno",
                    popup = paste(cr_pharomachrus_mocinno$locality, 
@@ -107,7 +107,7 @@ m <- leaflet() %>%
                  group = "Altitud"
   ) %>%
 
-  addRasterImage(cr_precip$prec1_23, 
+  addRasterImage(cr_precip$bio12_23, 
                  colors = pal2, 
                  opacity = 0.8, 
                  group = "Precipitaciones"
